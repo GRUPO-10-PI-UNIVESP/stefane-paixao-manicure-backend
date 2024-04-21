@@ -26,7 +26,7 @@ model Servico{
 model Cliente{
     clienteId Int @id @unique @default(autoincrement())
     nomeCliente String
-    numeroTelefone String
+    numeroTelefone String @unique
 
     atendimento Atendimento[]
 }

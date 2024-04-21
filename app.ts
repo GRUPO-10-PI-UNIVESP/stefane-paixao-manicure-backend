@@ -1,26 +1,20 @@
+//importação do framework express
 import express from "express";
 
+//importando as rotas definidas no arquivo de rotas em http
+import routes from "./src/shared/http/routes";
+
+//adiciona à constante um objeto que contém o express framework API e todas suas configurações básicas à inicialização da aplicação
 const app = express();
 
-var mysql = require("mysql");
+///middleware do epxress que converte a requisição body para JSON
+app.use(express.json());
 
-var connection = mysql.createConnection({
-    host: "localhost",
-    user: "root",
-    password: "admin",
-    database: "projeto_integrador1"
-});
+//middleware do express que converte apenas quando o body está em formato urlencoded e o content-type do header está de acordo com o type do body enviado
+app.use(express.urlencoded({extended: true}));
 
-//testando a conexão
-connection.connect(function(err: any)
-{
-    if(err) throw err
-    {
-        console.log("A conexão foi bem-sucedida");
-    }
-});
+//adiciona ao APP às rotas
+app.use(routes);
 
-
-
-// app.use(express.json());
+//porta de comunicação da aplicação
 app.listen(5000);
