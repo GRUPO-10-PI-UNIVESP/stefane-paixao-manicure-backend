@@ -9,7 +9,7 @@ var connection = mysql.createConnection({
     user: "root",
     password: "admin",
     database: "projeto_integrador1"
-})
+});
 
 //testando a conexão
 connection.connect(function(err: any)
@@ -18,7 +18,7 @@ connection.connect(function(err: any)
     {
         console.log("A conexão foi bem-sucedida");
     }
-})
+});
 
 
 

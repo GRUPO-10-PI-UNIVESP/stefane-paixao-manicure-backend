@@ -2,7 +2,65 @@ generator client{
     provider = "prisma-client-js"
 }
 
-database db{
+datasource db{
     provider = "mysql"
     url = env("DATABASE_URL")
+}
+
+model Agenda{
+    agendaId Int @id @unique @default(autoincrement())
+    dataHoraInicial DateTime
+    dataHoraFinal DateTime
+
+    atendimento Atendimento[]
+}
+
+model Servico{
+    servicoId Int @id @unique @default(autoincrement())
+    nomeServico String
+    valorServico Decimal
+
+    atendimentoHasServico AtendimentoHasServico[]
+}
+
+model Cliente{
+    clienteId Int @id @unique @default(autoincrement())
+    nomeCliente String
+    numeroTelefone String
+
+    atendimento Atendimento[]
+}
+
+model Login{
+    loginId Int @id @unique @default(autoincrement())
+    usuario String @unique
+    senha String
+    email String @unique
+}
+
+model Atendimento{
+    atendimentoId Int @unique @default(autoincrement())
+    clienteId Int 
+    agendaId Int
+    valorTotal Decimal
+
+    atendimentoHasServico AtendimentoHasServico[]
+
+    cliente Cliente @relation(fields: [clienteId], references: [clienteId])
+    agenda Agenda @relation(fields: [agendaId], references: [agendaId])
+
+
+    @@id([atendimentoId, clienteId, agendaId])
+}
+
+model AtendimentoHasServico{
+    atendimentoHasServicoId Int @unique @default(autoincrement())
+    atendimentoId Int
+    servicoId Int
+    itemServico String
+
+    atendimento Atendimento @relation(fields: [atendimentoId], references: [atendimentoId])
+    servico Servico @relation(fields: [servicoId], references: [servicoId])
+
+    @@id([atendimentoHasServicoId, atendimentoId, servicoId])
 }
