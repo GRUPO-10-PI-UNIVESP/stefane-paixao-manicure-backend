@@ -2,17 +2,17 @@
 import {Request, Response} from "express";
 
 //importação da interface IAgenda para tipar as agendas
-import IAgenda from "../data/model/IAgenda";
+import IAgenda from "../data/models/IAgenda";
 
 //repository a ser injetado nos serviços
-import AgendaRepository from "../data/repository/AgendaRepository";
+import AgendaRepository from "../data/repositories/AgendaRepository";
 
 //Importação dos serviços 
-import CreateAgenda from "../service/create/CreateAgenda";
-import UpdateAgenda from "../service/update/UpdateAgenda";
-import DeleteAgenda from "../service/delete/DeleteAgenda";
-import ReadAgendasAvailable from "../service/read/ReadAgendasAvailable";
-import ReadAllAgendas from "../service/read/ReadAllAgendas";
+import CreateAgenda from "../services/create/CreateAgenda";
+import UpdateAgenda from "../services/update/UpdateAgenda";
+import DeleteAgenda from "../services/delete/DeleteAgenda";
+import ReadAgendasAvailable from "../services/read/ReadAgendasAvailable";
+import ReadAllAgendas from "../services/read/ReadAllAgendas";
 
 //exporta e cria a classe controller de Agenda
 export default class AgendaController

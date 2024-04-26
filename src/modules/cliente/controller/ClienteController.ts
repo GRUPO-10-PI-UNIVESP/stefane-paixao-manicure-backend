@@ -1,14 +1,14 @@
 //request e response para operações HTTP
 import {Request, Response} from "express";
 
-import ICliente from "../data/model/ICliente";
-import CreateCliente from "../service/create/CreateCliente";
-import ClienteRepository from "../data/repository/ClienteRepository";
-import UpdateCliente from "../service/update/UpdateCliente";
-import DeleteCliente from "../service/delete/DeleteCliente";
-import ReadClienteByName from "../service/readByName/ReadClienteByName";
-import ReadClienteByPhone from "../service/readByPhone/ReadClienteByPhone";
-import ReadClientes from "../service/readAll/ReadClientes";
+import ICliente from "../data/models/ICliente";
+import CreateCliente from "../services/create/CreateCliente";
+import ClienteRepository from "../data/repositories/ClienteRepository";
+import UpdateCliente from "../services/update/UpdateCliente";
+import DeleteCliente from "../services/delete/DeleteCliente";
+import ReadClienteByName from "../services/readByName/ReadClienteByName";
+import ReadClienteByPhone from "../services/readByPhone/ReadClienteByPhone";
+import ReadClientes from "../services/readAll/ReadClientes";
 
 //cria e exporta a classe
 export default class ClienteController
