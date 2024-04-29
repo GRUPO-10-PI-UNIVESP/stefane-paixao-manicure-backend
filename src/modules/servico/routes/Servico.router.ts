@@ -1,5 +1,5 @@
 //importa método especial do express para a inicialização de roteamento 
-import {Router} from "express";
+import Router from "express";
 
 //importação do mediator que contém as rotas
 import ServicoController from "../controller/ServicoController";
