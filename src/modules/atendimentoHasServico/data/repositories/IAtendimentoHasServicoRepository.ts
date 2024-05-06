@@ -6,7 +6,7 @@ export default interface IAtendimentoHasServicoRepository
 {
     //assinatura dos métodos
     addServiceToAtendimento(servicoId: number, atendimentoId: number): Promise<void>;
-    removeServiceFromAtendimento(atendimentoHasServicoId: number, servicoId: number, atendimentoId: number): Promise<void>;
+    removeServiceFromAtendimento(atendimentoHasServicoId: number): Promise<void>;
     getServicoHasAtendimento(servicoId: number, atendimentoId: number): Promise<IAtendimentoHasServico>
     getServicesFromAtendimento(atendimentoId: number): Promise<IAtendimentoHasServico[]>;
 }

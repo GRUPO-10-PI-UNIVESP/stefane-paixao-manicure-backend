@@ -17,10 +17,9 @@ export default class AtendimentoHasServicoRepository implements IAtendimentoHasS
     }
 
     //método do repositório para remover a associação na base de dados
-    async removeServiceFromAtendimento(atendimentoHasServicoId: number, servicoId: number, atendimentoId: number): Promise<void> 
+    async removeServiceFromAtendimento(atendimentoHasServicoId: number): Promise<void> 
     {
-        await prisma.atendimentoHasServico.update({data: {servicoId: servicoId, atendimentoId: atendimentoId}, 
-                where: {atendimentoHasServicoId: atendimentoHasServicoId}});
+        await prisma.atendimentoHasServico.delete({where: {atendimentoHasServicoId: atendimentoHasServicoId}});
     }
 
     //método para obter a associação de atendimento e serviço na base de dados

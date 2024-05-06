@@ -16,8 +16,14 @@ export default class AtendimentoRepository implements IAtendimentoRepository
     }
 
     //repositório para atualizar o atendimento
-    async update(atendimento: IAtendimento, atendimentoId: number): Promise<void> {
+    async update(atendimento: IAtendimento, atendimentoId: number): Promise<void> 
+    {
+        console.log("----------------------")
+        console.log("dentro do repository")
+        console.log("atendimento", atendimento);
+        console.log("console log do prisma", await prisma.atendimento.update({data: atendimento, where: {atendimentoId: atendimentoId}}));
         await prisma.atendimento.update({data: atendimento, where: {atendimentoId: atendimentoId}});
+        console.log("O valor do atendimento foi atualizado.");
     }
 
     //repositório para deletar o atendimento

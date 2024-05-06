@@ -32,7 +32,7 @@ export default class RemoveServiceFromAtendimento
         //se o objeto existe, então segue para excluir
         if(atendimentoHasServico.atendimentoHasServicoId != null)
         {
-            this.atendimentoHasServicoRepository.removeServiceFromAtendimento(atendimentoHasServico.atendimentoHasServicoId, servicoId, atendimentoId);
+            this.atendimentoHasServicoRepository.removeServiceFromAtendimento(atendimentoHasServico.atendimentoHasServicoId);
         }
         //não existe, então não há serviço para ser removido do atendimento
         else

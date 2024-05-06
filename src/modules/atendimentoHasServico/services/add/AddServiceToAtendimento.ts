@@ -16,6 +16,7 @@ export default class AddServiceToAtendimento
     //executa o serviço, envia os ids de serviço e atendimento à associação
     async execute(servicoId: number, atendimentoId: number): Promise<void>
     {
+        console.log("executou o caso de uso")
         this.atendimentoHasServicoRepository.addServiceToAtendimento(servicoId, atendimentoId);
     }
 }

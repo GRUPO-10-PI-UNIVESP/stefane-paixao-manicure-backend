@@ -22,11 +22,11 @@ export default class AgendaRepository implements IAgendaRepository
 
     async getAvailableAgenda(): Promise<IAgenda[]> 
     {
-        throw new Error("Method not implemented.");
+        return await prisma.$queryRaw ` SELECT * FROM agenda WHERE agendaId IS NOT IN atendimento`;
     }
 
     async getAllAgendas(): Promise<IAgenda[]> 
     {
-        return await prisma.agenda.findMany();
+        return await prisma.agenda.findMany({include: {atendimento: {include: {cliente: true, atendimentoHasServico: {include: {servico: true}}}}}});
     }
 }

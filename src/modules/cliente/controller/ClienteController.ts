@@ -121,7 +121,7 @@ export default class ClienteController
         try
         {
             //obtém pela url o nome do cliente
-            const phone: string = (request.params.phone);
+            const phone: string = (request.params.telefone);
 
             //invoca o serviço
             const cliente: ICliente = await new ReadClienteByPhone(new ClienteRepository()).execute(phone);

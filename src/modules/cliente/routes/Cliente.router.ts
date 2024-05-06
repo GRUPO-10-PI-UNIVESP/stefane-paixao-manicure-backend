@@ -13,7 +13,7 @@ router.post("/cliente", new ClienteController().create);
 router.patch("/cliente/:clienteId", new ClienteController().update);
 router.delete("/cliente/:clienteId", new ClienteController().delete);
 router.get("/clienteByName/:name", new ClienteController().readByName);
-router.get("/clienteByTelefone/:phone", new ClienteController().readByPhone);
+router.get("/clienteByTelefone/:telefone", new ClienteController().readByPhone);
 router.get("/clientes", new ClienteController().readClientes);
 
 //exporta o módulo de rota

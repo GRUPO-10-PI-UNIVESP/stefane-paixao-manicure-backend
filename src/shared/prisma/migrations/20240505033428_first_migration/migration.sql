@@ -12,7 +12,7 @@ CREATE TABLE `Agenda` (
 CREATE TABLE `Servico` (
     `servicoId` INTEGER NOT NULL AUTO_INCREMENT,
     `nomeServico` VARCHAR(191) NOT NULL,
-    `valorServico` DECIMAL(65, 30) NOT NULL,
+    `valorServico` DECIMAL(10, 2) NOT NULL,
 
     UNIQUE INDEX `Servico_servicoId_key`(`servicoId`),
     PRIMARY KEY (`servicoId`)
@@ -22,8 +22,10 @@ CREATE TABLE `Servico` (
 CREATE TABLE `Cliente` (
     `clienteId` INTEGER NOT NULL AUTO_INCREMENT,
     `nomeCliente` VARCHAR(191) NOT NULL,
+    `numeroTelefone` VARCHAR(191) NOT NULL,
 
     UNIQUE INDEX `Cliente_clienteId_key`(`clienteId`),
+    UNIQUE INDEX `Cliente_numeroTelefone_key`(`numeroTelefone`),
     PRIMARY KEY (`clienteId`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -56,7 +58,6 @@ CREATE TABLE `AtendimentoHasServico` (
     `atendimentoHasServicoId` INTEGER NOT NULL AUTO_INCREMENT,
     `atendimentoId` INTEGER NOT NULL,
     `servicoId` INTEGER NOT NULL,
-    `itemServico` VARCHAR(191) NOT NULL,
 
     UNIQUE INDEX `AtendimentoHasServico_atendimentoHasServicoId_key`(`atendimentoHasServicoId`),
     PRIMARY KEY (`atendimentoHasServicoId`, `atendimentoId`, `servicoId`)
