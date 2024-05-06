@@ -30,6 +30,7 @@ Instruções de Uso
     Instale as dependências usando npm install
     Instale o MySQL 
     Inicie o serviço MySQL
+    Sincronize o banco de dados com o schema do prisma através de npx prisma migrate dev
     Inicie o servidor de desenvolvimento com npm run dev
     Acesse o aplicativo em http://localhost:5000
 
