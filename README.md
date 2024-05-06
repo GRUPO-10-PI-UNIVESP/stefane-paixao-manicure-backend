@@ -1,6 +1,6 @@
 Projeto Integrador - Frontend em React (Vite)
 
-Este repositório contém o código-fonte do backend desenvolvido em NodeJS com Typescript utilizando ORM prisma para a persistência do Projeto Integrador da disciplina PJI110 da Univesp. O objetivo é criar um Sistema Informatizado Web para controle e otimização dos processos de uma empresa de prestação de serviços de Manicure, denominada Studios Stefane Paixão.
+Este repositório contém o código-fonte do backend desenvolvido em NodeJS com Typescript utilizando ORM prisma para a persistência com o banco de dados MySQL do Projeto Integrador da disciplina PJI110 da Univesp. O objetivo é criar um Sistema Informatizado Web para controle e otimização dos processos de uma empresa de prestação de serviços de Manicure, denominada Studios Stefane Paixão.
 Integrantes do Grupo
 
     Giovani Merces da Silva
