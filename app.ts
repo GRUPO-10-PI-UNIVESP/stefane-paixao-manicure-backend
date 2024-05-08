@@ -11,10 +11,12 @@ const app = express();
 app.use(express.json());
 
 //middleware do express que converte apenas quando o body está em formato urlencoded e o content-type do header está de acordo com o type do body enviado
-app.use(express.urlencoded({extended: true}));
+app.use(express.urlencoded({ extended: true }));
 
 //adiciona ao APP às rotas
 app.use(routes);
 
 //porta de comunicação da aplicação
-app.listen(5000);
+app.listen(5000, () => {
+  console.log("Listening at 5000");
+});
