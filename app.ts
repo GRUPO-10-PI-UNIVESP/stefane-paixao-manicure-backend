@@ -1,11 +1,16 @@
 //importação do framework express
 import express from "express";
+//importação do framework cors
+import cors from "cors";
 
 //importando as rotas definidas no arquivo de rotas em http
 import routes from "./src/shared/http/routes";
 
 //adiciona à constante um objeto que contém o express framework API e todas suas configurações básicas à inicialização da aplicação
 const app = express();
+
+//enable CORS
+app.use(cors());
 
 ///middleware do epxress que converte a requisição body para JSON
 app.use(express.json());
