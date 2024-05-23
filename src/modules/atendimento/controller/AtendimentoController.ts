@@ -149,7 +149,7 @@ export default class AtendimentoController
         {
             //passa ao serviço o atendimento a ser inserido no sistema
             let atendimentos: IAtendimento[] = await new readAllAtendimentos(new AtendimentoRepository()).execute();
-            
+
             for(let i = 0; i < atendimentos.length; i ++)
             {
 
@@ -158,32 +158,14 @@ export default class AtendimentoController
                 const obj = 
                 { 
                     data: ((agenda.dataHoraInicial.getDate() < 9 ? '0' : '') + agenda.dataHoraInicial.getDate()) + "/" + 
-                    ((agenda.dataHoraInicial.getMonth() < 9 ? '0' : '') + agenda.dataHoraInicial.getMonth()) + "/" + 
+                    ((agenda.dataHoraInicial.getMonth() < 9 ? '0' : '') + (agenda.dataHoraInicial.getMonth() + 1)) + "/" + 
                     agenda.dataHoraFinal.getFullYear(),
-                    horaInicial: agenda.dataHoraInicial.getHours() + ":" + ((agenda.dataHoraInicial.getMinutes() < 9 ? '0' : '') + agenda.dataHoraInicial.getMinutes()),
-                    horaFinal: agenda.dataHoraFinal.getHours()  + ":" + ((agenda.dataHoraFinal.getMinutes() < 9 ? '0' : '') + agenda.dataHoraFinal.getMinutes())
+                    horaInicial: (agenda.dataHoraInicial.getHours() + 3) + ":" + ((agenda.dataHoraInicial.getMinutes() < 9 ? '0' : '') + agenda.dataHoraInicial.getMinutes()),
+                    horaFinal: (agenda.dataHoraFinal.getHours() + 3)  + ":" + ((agenda.dataHoraFinal.getMinutes() < 9 ? '0' : '') + agenda.dataHoraFinal.getMinutes())
                 }
                 atendimentos[i].dataFormatada = obj;
             }
-            // atendimentos.forEach(async element => 
-            // {
-            //     const agenda = await new ReadAgenda(new AgendaRepository()).execute(element.agendaId);
-
-            //     const obj = 
-            //     { 
-            //         data: ((agenda.dataHoraInicial.getDate() < 9 ? '0' : '') + agenda.dataHoraInicial.getDate()) + "/" + 
-            //         ((agenda.dataHoraInicial.getMonth() < 9 ? '0' : '') + agenda.dataHoraInicial.getMonth()) + "/" + 
-            //         agenda.dataHoraFinal.getFullYear(),
-            //         horaInicial: agenda.dataHoraInicial.getHours() + ":" + ((agenda.dataHoraInicial.getMinutes() < 9 ? '0' : '') + agenda.dataHoraInicial.getMinutes()),
-            //         horaFinal: agenda.dataHoraFinal.getHours()  + ":" + ((agenda.dataHoraFinal.getMinutes() < 9 ? '0' : '') + agenda.dataHoraFinal.getMinutes())
-            //     }
-                
-            //     element.dataFormatada = obj;
-            //     console.log("-----------")
-            //     console.log(element)
-            // });
-            
-            // console.log("Atendimentos com hora dividida", atendimentos);
+      
             //resposta afirmativa da API
             return response.status(200).json(atendimentos);
         }
