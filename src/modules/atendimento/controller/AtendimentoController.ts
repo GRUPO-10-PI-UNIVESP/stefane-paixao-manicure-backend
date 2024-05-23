@@ -50,13 +50,17 @@ export default class AtendimentoController
             
             //passa ao serviço o atendimento a ser inserido no sistema
             const atendimentoInserido: IAtendimento = await new CreateAtendimento(new AtendimentoRepository()).execute(atendimento);
-
-            await new AddServiceToAtendimento(new AtendimentoHasServicoRepository()).execute(servicoId, atendimentoInserido.atendimentoId);
+            console.log(atendimentoInserido)
 
             setTimeout(function()
             {
-                new UpdateValorTotal().updateValorTotal(atendimentoInserido.atendimentoId)
+                new AddServiceToAtendimento(new AtendimentoHasServicoRepository()).execute(servicoId, atendimentoInserido.atendimentoId);
             }, 1000);
+            
+            setTimeout(function()
+            {
+                new UpdateValorTotal().updateValorTotal(atendimentoInserido.atendimentoId)
+            }, 2000);
 
             //resposta afirmativa da API
             return response.status(201).json({mensagem: "Atendimento cadastrado com sucesso.", atendimento});
