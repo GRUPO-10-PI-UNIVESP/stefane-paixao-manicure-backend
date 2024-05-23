@@ -5,20 +5,17 @@ import IServicoRepository from "../../data/repositories/IServicoRepository";
 import IServico from "../../data/models/IServico";
 
 //cria e exporta a classe de deleção de serviço
-export default class DeleteServico
-{
-    //objeto repository com acomplamento abstrato
-    private servicoRepository: IServicoRepository;
+export default class DeleteServico {
+  //objeto repository com acomplamento abstrato
+  private servicoRepository: IServicoRepository;
 
-    //construtor injetando a dependência no objeto
-    constructor(servicoRepository: IServicoRepository)
-    {
-        this.servicoRepository = servicoRepository;
-    }
+  //construtor injetando a dependência no objeto
+  constructor(servicoRepository: IServicoRepository) {
+    this.servicoRepository = servicoRepository;
+  }
 
-    //executa o servico e envia o id recebido ao repository
-    async execute(): Promise<IServico[]>
-    {
-        return this.servicoRepository.getAll();
-    }
+  //executa o servico e envia o id recebido ao repository
+  async execute(): Promise<IServico[]> {
+    return await this.servicoRepository.getAll();
+  }
 }
