@@ -13,6 +13,15 @@ import UpdateAtendimento from "../services/update/UpdateAtendimento";
 import DeleteAtendimento from "../services/delete/DeleteAtendimento";
 import readUniqueAtendimento from "../services/read/readUniqueAtendimento";
 import readAllAtendimentos from "../services/read/readAllAtendimentos";
+import CreateAgenda from "../../agenda/services/create/CreateAgenda";
+import AgendaRepository from "../../agenda/data/repositories/AgendaRepository";
+import IAgenda from "../../agenda/data/models/IAgenda";
+import ReadAgendasAvailable from "../../agenda/services/read/ReadAgenda";
+import ReadAgenda from "../../agenda/services/read/ReadAgenda";
+import AtendimentoHasServicoCtrl from "../../atendimentoHasServico/controller/AtendimentoHasServicoCtrl";
+import AtendimentoHasServicoRepository from "../../atendimentoHasServico/data/repositories/AtendimentoHasServicoRepository";
+import AddServiceToAtendimento from "../../atendimentoHasServico/services/add/AddServiceToAtendimento";
+import UpdateValorTotal from "../services/update/UpdateValorTotal";
 
 //cria e exporta a classe controller de Atendimento
 export default class AtendimentoController
@@ -24,10 +33,30 @@ export default class AtendimentoController
         try
         {
             //guarda na constante as infos de atendimento vindas do body
-            const atendimento: IAtendimento = request.body;
-
+            let atendimento: IAtendimento = request.body;
+            let servicoId: number = Number.parseInt(request.body.servicoId);
+            //criando o agenda pelos dados inseridos do body
+            const agenda: IAgenda = 
+            {
+                dataHoraInicial: request.body.dataHoraInicial, dataHoraFinal: request.body.dataHoraFinal,
+                agendaId: 0
+            };
+  
+            //inclui a nova agenda
+            const agendaInserida = await new CreateAgenda(new AgendaRepository()).execute(agenda);
+            
+            //adicionando o id da agenda inserida ao agendaId do atendimento
+            atendimento.agendaId = agendaInserida.agendaId;
+            
             //passa ao serviço o atendimento a ser inserido no sistema
-            await new CreateAtendimento(new AtendimentoRepository()).execute(atendimento);
+            const atendimentoInserido: IAtendimento = await new CreateAtendimento(new AtendimentoRepository()).execute(atendimento);
+
+            await new AddServiceToAtendimento(new AtendimentoHasServicoRepository()).execute(servicoId, atendimentoInserido.atendimentoId);
+
+            setTimeout(function()
+            {
+                new UpdateValorTotal().updateValorTotal(atendimentoInserido.atendimentoId)
+            }, 1000);
 
             //resposta afirmativa da API
             return response.status(201).json({mensagem: "Atendimento cadastrado com sucesso.", atendimento});
@@ -119,8 +148,42 @@ export default class AtendimentoController
         try
         {
             //passa ao serviço o atendimento a ser inserido no sistema
-            const atendimentos: IAtendimento[] = await new readAllAtendimentos(new AtendimentoRepository()).execute();
- 
+            let atendimentos: IAtendimento[] = await new readAllAtendimentos(new AtendimentoRepository()).execute();
+            
+            for(let i = 0; i < atendimentos.length; i ++)
+            {
+
+                const agenda = await new ReadAgenda(new AgendaRepository()).execute(atendimentos[i].agendaId);
+
+                const obj = 
+                { 
+                    data: ((agenda.dataHoraInicial.getDate() < 9 ? '0' : '') + agenda.dataHoraInicial.getDate()) + "/" + 
+                    ((agenda.dataHoraInicial.getMonth() < 9 ? '0' : '') + agenda.dataHoraInicial.getMonth()) + "/" + 
+                    agenda.dataHoraFinal.getFullYear(),
+                    horaInicial: agenda.dataHoraInicial.getHours() + ":" + ((agenda.dataHoraInicial.getMinutes() < 9 ? '0' : '') + agenda.dataHoraInicial.getMinutes()),
+                    horaFinal: agenda.dataHoraFinal.getHours()  + ":" + ((agenda.dataHoraFinal.getMinutes() < 9 ? '0' : '') + agenda.dataHoraFinal.getMinutes())
+                }
+                atendimentos[i].dataFormatada = obj;
+            }
+            // atendimentos.forEach(async element => 
+            // {
+            //     const agenda = await new ReadAgenda(new AgendaRepository()).execute(element.agendaId);
+
+            //     const obj = 
+            //     { 
+            //         data: ((agenda.dataHoraInicial.getDate() < 9 ? '0' : '') + agenda.dataHoraInicial.getDate()) + "/" + 
+            //         ((agenda.dataHoraInicial.getMonth() < 9 ? '0' : '') + agenda.dataHoraInicial.getMonth()) + "/" + 
+            //         agenda.dataHoraFinal.getFullYear(),
+            //         horaInicial: agenda.dataHoraInicial.getHours() + ":" + ((agenda.dataHoraInicial.getMinutes() < 9 ? '0' : '') + agenda.dataHoraInicial.getMinutes()),
+            //         horaFinal: agenda.dataHoraFinal.getHours()  + ":" + ((agenda.dataHoraFinal.getMinutes() < 9 ? '0' : '') + agenda.dataHoraFinal.getMinutes())
+            //     }
+                
+            //     element.dataFormatada = obj;
+            //     console.log("-----------")
+            //     console.log(element)
+            // });
+            
+            // console.log("Atendimentos com hora dividida", atendimentos);
             //resposta afirmativa da API
             return response.status(200).json(atendimentos);
         }

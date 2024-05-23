@@ -1,7 +1,7 @@
 import IAgenda from "../../data/models/IAgenda";
 import IAgendaRepository from "../../data/repositories/IAgendaRepository";
 
-export default class CreateAgenda
+export default class ReadAgendasAvailable
 {
     private agendaRepository: IAgendaRepository;
 
@@ -10,8 +10,8 @@ export default class CreateAgenda
         this.agendaRepository = agendaRepository;
     }
 
-    async execute(agenda: IAgenda): Promise<IAgenda>
+    async execute(agendaId: number): Promise<IAgenda>
     {
-        return this.agendaRepository.create(agenda);
+        return this.agendaRepository.getAgenda(agendaId);
     }
 }

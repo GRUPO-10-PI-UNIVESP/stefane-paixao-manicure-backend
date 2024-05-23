@@ -17,9 +17,11 @@ export default class CreateAtendimento
     }
 
     //executa o serviço que passa ao repositório o atendimento a ser criado na base de dados
-    async execute(atendimento: IAtendimento): Promise<void>
+    async execute(atendimento: IAtendimento): Promise<IAtendimento>
     {
+        
         atendimento.valorTotal = 0;
-        this.atendimentoRepository.create(atendimento);
+        
+        return this.atendimentoRepository.create(atendimento);
     }
 }
