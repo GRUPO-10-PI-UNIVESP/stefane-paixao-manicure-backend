@@ -19,6 +19,6 @@ export default class UpdateAtendimento
     //executa o serviço que passa ao repositório o atendimento a ser atualizado e seu id na base de dados
     async execute(atendimento: IAtendimento, atendimentoId: number): Promise<void>
     {
-        this.atendimentoRepository.update(atendimento, atendimentoId);
+        await this.atendimentoRepository.update(atendimento, atendimentoId);
     }
 }
