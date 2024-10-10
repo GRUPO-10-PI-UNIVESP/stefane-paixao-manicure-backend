@@ -9,5 +9,6 @@ export default interface IAtendimento
     clienteId: number;
     agendaId: number;
     valorTotal: number;
+    dataFormatada: any;
 
 }

@@ -23,7 +23,7 @@ export default class UpdateValorTotal
         }
         //montando o objeto atendimento para sua atualização
         let atendimento: any =  {valorTotal: valores};
-
+        
         //injeta o repositório no serviço passando a atualização do atendimento e seu respectivo id
         await new UpdateAtendimento(new AtendimentoRepository()).execute(atendimento, atendimentoId)
     }

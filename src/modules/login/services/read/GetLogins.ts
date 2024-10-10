@@ -5,16 +5,13 @@ import ILogin from "../../data/models/ILogin";
 import ILoginRepository from "../../data/repositories/ILoginRepository";
 
 //exporta e cria o serviço
-export default class getLogins
-{
-    //injetando a dependência via construtor no serviço
-    constructor(private loginRepository: ILoginRepository)
-    {}
+export default class getLogins {
+  //injetando a dependência via construtor no serviço
+  constructor(private loginRepository: ILoginRepository) {}
 
-    //executa o serviço
-    async execute(): Promise<ILogin[]>
-    {
-        //através da chamada à camada de persistência consulta-se todos os logins no banco de dados
-        return this.loginRepository.buscarTodos();
-    }
+  //executa o serviço
+  async execute(): Promise<ILogin[]> {
+    //através da chamada à camada de persistência consulta-se todos os logins no banco de dados
+    return await this.loginRepository.buscarTodos();
+  }
 }

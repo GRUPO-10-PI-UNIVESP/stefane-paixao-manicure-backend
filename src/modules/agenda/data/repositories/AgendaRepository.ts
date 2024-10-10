@@ -5,9 +5,10 @@ import prisma from "../../../../shared/prisma/prismaClient";
 
 export default class AgendaRepository implements IAgendaRepository
 {
-    async create(agenda: IAgenda): Promise<void> 
+    async create(agenda: IAgenda): Promise<IAgenda> 
     {
-        await prisma.agenda.create({data: agenda});
+        
+        return await prisma.agenda.create({data: {dataHoraInicial: agenda.dataHoraInicial, dataHoraFinal: agenda.dataHoraFinal}});
     }
 
     async update(agenda: IAgenda, agendaId: number): Promise<void> 
@@ -23,6 +24,11 @@ export default class AgendaRepository implements IAgendaRepository
     async getAvailableAgenda(): Promise<IAgenda[]> 
     {
         return await prisma.$queryRaw ` SELECT * FROM agenda WHERE agendaId IS NOT IN atendimento`;
+    }
+
+    async getAgenda(agendaId: number): Promise<IAgenda>
+    {
+        return <IAgenda> await prisma.agenda.findUnique({where: {agendaId: agendaId}});
     }
 
     async getAllAgendas(): Promise<IAgenda[]> 

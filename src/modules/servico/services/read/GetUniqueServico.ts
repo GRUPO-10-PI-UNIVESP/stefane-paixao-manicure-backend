@@ -5,20 +5,17 @@ import IServicoRepository from "../../data/repositories/IServicoRepository";
 import IServico from "../../data/models/IServico";
 
 //cria e exporta a classe de busca de serviço específico
-export default class DeleteServico
-{
-    //objeto repository com acomplamento abstrato
-    private servicoRepository: IServicoRepository;
+export default class DeleteServico {
+  //objeto repository com acomplamento abstrato
+  private servicoRepository: IServicoRepository;
 
-    //construtor injetando a dependência no objeto
-    constructor(servicoRepository: IServicoRepository)
-    {
-        this.servicoRepository = servicoRepository;
-    }
+  //construtor injetando a dependência no objeto
+  constructor(servicoRepository: IServicoRepository) {
+    this.servicoRepository = servicoRepository;
+  }
 
-    //executa o servico e envia o id recebido ao repository
-    async execute(servicoId: number): Promise<IServico>
-    {
-        return this.servicoRepository.getUnique(servicoId);
-    }
+  //executa o servico e envia o id recebido ao repository
+  async execute(servicoId: number): Promise<IServico> {
+    return await this.servicoRepository.getUnique(servicoId);
+  }
 }

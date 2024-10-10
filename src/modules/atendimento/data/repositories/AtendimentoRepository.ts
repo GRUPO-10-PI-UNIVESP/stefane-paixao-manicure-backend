@@ -10,20 +10,18 @@ import prisma from "../../../../shared/prisma/prismaClient";
 export default class AtendimentoRepository implements IAtendimentoRepository
 {
     //repositório para criar o atendimento
-    async create(atendimento: IAtendimento): Promise<void> 
+    async create(atendimento: IAtendimento): Promise<IAtendimento> 
     {
-        await prisma.atendimento.create({data: atendimento});
+        console.log(atendimento)
+        return <IAtendimento> <unknown> await prisma.atendimento.create(
+            { data: {agendaId: atendimento.agendaId, clienteId: atendimento.clienteId, valorTotal: atendimento.valorTotal} });
     }
 
     //repositório para atualizar o atendimento
     async update(atendimento: IAtendimento, atendimentoId: number): Promise<void> 
     {
-        console.log("----------------------")
-        console.log("dentro do repository")
-        console.log("atendimento", atendimento);
-        console.log("console log do prisma", await prisma.atendimento.update({data: atendimento, where: {atendimentoId: atendimentoId}}));
-        await prisma.atendimento.update({data: atendimento, where: {atendimentoId: atendimentoId}});
-        console.log("O valor do atendimento foi atualizado.");
+        // await prisma.atendimento.update({data: atendimento, where: {atendimentoId: atendimentoId}});
+        await prisma.atendimento.update({data: {agendaId: atendimento.agendaId, valorTotal: atendimento.valorTotal, clienteId: atendimento.clienteId}, where: {atendimentoId: atendimentoId}});
     }
 
     //repositório para deletar o atendimento
@@ -35,13 +33,13 @@ export default class AtendimentoRepository implements IAtendimentoRepository
     //repositório para consultar o atendimento
     async getUnique(atendimentoId: number): Promise<IAtendimento> 
     {
-        return <IAtendimento> <unknown> await prisma.atendimento.findUnique({where: {atendimentoId: atendimentoId}});
+        return <IAtendimento> <unknown> await prisma.atendimento.findUnique({where: {atendimentoId: atendimentoId}, include: {cliente: true, atendimentoHasServico: {include: {servico: true}}, agenda: true}});
     }
 
     //repositório para consultar todos os atendimentos
     async getAll(): Promise<IAtendimento[]> 
     {
-        return <IAtendimento[]> <unknown> await prisma.atendimento.findMany();
+        return <IAtendimento[]> <unknown> await prisma.atendimento.findMany({include: {cliente: true, atendimentoHasServico: {include: {servico: true}}, agenda: true}});
     }
     
 }

@@ -5,7 +5,7 @@ import IAtendimento from "../models/IAtendimento";
 export default interface IAtendimentoRepository 
 {
     //assinatura dos métodos
-    create(atendimento: IAtendimento): Promise<void>;
+    create(atendimento: IAtendimento): Promise<IAtendimento>;
     update(atendimento: IAtendimento, atendimentoId: number): Promise<void>;
     delete(atendimentoId: number): Promise<void>;
     getUnique(atendimentoId: number): Promise<IAtendimento>;

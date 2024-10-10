@@ -13,6 +13,7 @@ export default class AtendimentoHasServicoRepository implements IAtendimentoHasS
     //método do repositório para inserir a associação na base de dados
     async addServiceToAtendimento(servicoId: number, atendimentoId: number): Promise<void> 
     {
+        
         await prisma.atendimentoHasServico.create({data: {servicoId: servicoId, atendimentoId: atendimentoId}});
     }
 
