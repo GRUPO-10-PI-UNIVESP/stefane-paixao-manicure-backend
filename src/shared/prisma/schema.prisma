@@ -43,7 +43,7 @@ model Filial{
     nome String @unique
     enderecoId Int
 
-    endereco Endereco @relation(fields: [enderecoId], references: [enderecoId])
+    endereco Endereco @relation(fields: [enderecoId], references: [enderecoId], onDelete: Cascade, onUpdate: Cascade) 
 
     atendimento Atendimento[]
 }
