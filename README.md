@@ -8,8 +8,9 @@ Integrantes do Grupo
     Jeferson Gomes Matias
     Jerodd Lathorre Macedo Silva
     Leonardo Gomes Fedorgchyn
-    Manoel da Cruz Araújo
+    Osvaldo Muniz Casarim
     Renan Pedrosa de Lima
+    Vinicius Gomes Soares
 
 Funcionalidades
 
