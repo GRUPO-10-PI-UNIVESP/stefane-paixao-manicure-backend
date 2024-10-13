@@ -8,6 +8,7 @@ export default interface IAtendimento
     atendimentoId: number;
     clienteId: number;
     agendaId: number;
+    filialId: number;
     valorTotal: number;
     dataFormatada: any;
 

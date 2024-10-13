@@ -14,14 +14,14 @@ export default class AtendimentoRepository implements IAtendimentoRepository
     {
         console.log(atendimento)
         return <IAtendimento> <unknown> await prisma.atendimento.create(
-            { data: {agendaId: atendimento.agendaId, clienteId: atendimento.clienteId, valorTotal: atendimento.valorTotal} });
+            { data: {agendaId: atendimento.agendaId, clienteId: atendimento.clienteId, filialId: atendimento.filialId, valorTotal: atendimento.valorTotal} });
     }
 
     //repositório para atualizar o atendimento
     async update(atendimento: IAtendimento, atendimentoId: number): Promise<void> 
     {
         // await prisma.atendimento.update({data: atendimento, where: {atendimentoId: atendimentoId}});
-        await prisma.atendimento.update({data: {agendaId: atendimento.agendaId, valorTotal: atendimento.valorTotal, clienteId: atendimento.clienteId}, where: {atendimentoId: atendimentoId}});
+        await prisma.atendimento.update({data: {agendaId: atendimento.agendaId, filialId: atendimento.filialId, valorTotal: atendimento.valorTotal, clienteId: atendimento.clienteId}, where: {atendimentoId: atendimentoId}});
     }
 
     //repositório para deletar o atendimento
