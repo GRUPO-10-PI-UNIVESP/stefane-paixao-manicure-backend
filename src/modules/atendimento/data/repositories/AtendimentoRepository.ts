@@ -26,7 +26,6 @@ export default class AtendimentoRepository implements IAtendimentoRepository {
     atendimento: IAtendimento,
     atendimentoId: number
   ): Promise<void> {
-    // await prisma.atendimento.update({data: atendimento, where: {atendimentoId: atendimentoId}});
     await prisma.atendimento.update({
       data: {
         agendaId: atendimento.agendaId,
@@ -44,7 +43,6 @@ export default class AtendimentoRepository implements IAtendimentoRepository {
       where: { atendimentoId: atendimentoId },
     });
 
-    //should first delete the atendimentoHasServico
     await prisma.atendimentoHasServico.deleteMany({
       where: { atendimentoId: atendimento?.atendimentoId },
     });
