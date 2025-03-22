@@ -10,6 +10,7 @@ import IAtendimentoHasServico from "../models/IAtendimentoHasServico";
 //exporta e cria a classe que implementa os métodos da associação de atendimento e serviço
 export default class AtendimentoHasServicoRepository implements IAtendimentoHasServicoRepository
 {
+    
     //método do repositório para inserir a associação na base de dados
     async addServiceToAtendimento(servicoId: number, atendimentoId: number): Promise<void> 
     {
@@ -34,5 +35,18 @@ export default class AtendimentoHasServicoRepository implements IAtendimentoHasS
     {
         return <IAtendimentoHasServico[]> <unknown> await prisma.atendimentoHasServico.findMany({include: {atendimento: true, servico: true}, where: {atendimentoId: atendimentoId}});
     }
+
+    
+    async getMoreFrequentServices(): Promise<IAtendimentoHasServico[]> 
+  {
+    const servicosContagem =
+    await prisma.atendimentoHasServico.groupBy({by: ['servicoId'], _count: {_all: true}});
+
+    const servicosOrdenados = 
+    await prisma.servico.findMany({where: {servicoId: { in: servicosContagem.map((servico => servico.servicoId))}}, 
+    orderBy: {atendimentoHasServico: {_count: 'desc'}}, include: {atendimentoHasServico: {include: {servico: true, atendimento: true}}}});
+
+    return <IAtendimentoHasServico[]> <unknown> servicosOrdenados;
+  }
 
 }

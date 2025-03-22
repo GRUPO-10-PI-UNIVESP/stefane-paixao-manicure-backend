@@ -7,5 +7,6 @@ router.post("/addServicoAtendimento", new AtendimentoHasServicoCtrl().addService
 router.delete("/removeServicoAtendimento", new AtendimentoHasServicoCtrl().removeServiceToAtendimento);
 router.get("/getServicoAtendimento", new AtendimentoHasServicoCtrl().getAtendimentoHasServico);
 router.get("/getServicosAtendimento", new AtendimentoHasServicoCtrl().getServicosFromAtendimento);
+router.get("/getMoreFrequentServices", new AtendimentoHasServicoCtrl().getMoreFrequentServices);
 
 export default router;

@@ -26,6 +26,7 @@ import UpdateAgenda from "../../agenda/services/update/UpdateAgenda";
 import RemoveServiceFromAtendimento from "../../atendimentoHasServico/services/remove/RemoveServiceFromAtendimento";
 import IServico from "../../servico/data/models/IServico";
 import GetServicosFromAtendimento from "../../atendimentoHasServico/services/get/GetServicosFromAtendimento";
+import GetMoreFrequentClients from "../services/read/GetMoreFrequentClients";
 
 //cria e exporta a classe controller de Atendimento
 export default class AtendimentoController
@@ -201,6 +202,25 @@ export default class AtendimentoController
                 }
                 atendimentos[i].dataFormatada = obj;
             }
+      
+            //resposta afirmativa da API
+            return response.status(200).json(atendimentos);
+        }
+        //catch para tratar erros
+        catch(error: any)
+        {
+            //resposta negativa da API
+            return response.status(500).json({mensagem: "Não foi possível consultar os atendimentos.", erro: error.message});
+        }
+    }
+
+    async getMoreFrequentClients(request: Request, response: Response): Promise<Response>
+    {
+        //try para testar a execução do código
+        try
+        {
+            //passa ao serviço o atendimento a ser inserido no sistema
+            let atendimentos: IAtendimento[] = await new GetMoreFrequentClients(new AtendimentoRepository()).execute();
       
             //resposta afirmativa da API
             return response.status(200).json(atendimentos);

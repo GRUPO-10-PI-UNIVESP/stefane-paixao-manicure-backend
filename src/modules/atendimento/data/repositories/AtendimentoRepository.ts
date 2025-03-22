@@ -8,6 +8,7 @@ import prisma from "../../../../shared/prisma/prismaClient";
 
 //exporta e cria o repositório
 export default class AtendimentoRepository implements IAtendimentoRepository {
+
   //repositório para criar o atendimento
   async create(atendimento: IAtendimento): Promise<IAtendimento> {
     console.log(atendimento);
@@ -59,6 +60,7 @@ export default class AtendimentoRepository implements IAtendimentoRepository {
         cliente: true,
         atendimentoHasServico: { include: { servico: true } },
         agenda: true,
+        filial: true
       },
     }));
   }
@@ -70,7 +72,20 @@ export default class AtendimentoRepository implements IAtendimentoRepository {
         cliente: true,
         atendimentoHasServico: { include: { servico: true } },
         agenda: true,
+        filial: true
       },
     }));
+  }
+
+  async getMoreFrequentClients(): Promise<IAtendimento[]> 
+  {
+    const clientesContagem =
+    await prisma.atendimento.groupBy({by: ['clienteId'], _count: {_all: true}});
+
+    const clientesOrdenados = 
+    await prisma.cliente.findMany({where: {clienteId: { in: clientesContagem.map((cliente => cliente.clienteId))}}, 
+    orderBy: {atendimento: {_count: 'desc'}},include: {atendimento: true}});
+
+    return <IAtendimento[]> <unknown> clientesOrdenados;
   }
 }

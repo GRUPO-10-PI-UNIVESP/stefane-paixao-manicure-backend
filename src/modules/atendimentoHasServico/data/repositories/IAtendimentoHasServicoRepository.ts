@@ -9,4 +9,5 @@ export default interface IAtendimentoHasServicoRepository
     removeServiceFromAtendimento(atendimentoHasServicoId: number): Promise<void>;
     getServicoHasAtendimento(servicoId: number, atendimentoId: number): Promise<IAtendimentoHasServico>
     getServicesFromAtendimento(atendimentoId: number): Promise<IAtendimentoHasServico[]>;
+    getMoreFrequentServices(): Promise<IAtendimentoHasServico[]>;
 }

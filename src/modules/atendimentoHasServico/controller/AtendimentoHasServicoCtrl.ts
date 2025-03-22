@@ -13,6 +13,7 @@ import RemoveServiceFromAtendimento from "../services/remove/RemoveServiceFromAt
 import GetAtendimentoHasServico from "../services/get/GetAtendimentoHasServico";
 import GetServicosFromAtendimento from "../services/get/GetServicosFromAtendimento";
 import UpdateValorTotal from "../../atendimento/services/update/UpdateValorTotal";
+import GetMoreFrequentServices from "../services/get/GetMoreFrequentServices";
 
 //cria e exporta o controller
 export default class AtendimentoHasServicoCtrl
@@ -90,6 +91,25 @@ export default class AtendimentoHasServicoCtrl
             const atendimentoId: number = Number.parseInt(request.body.atendimentoId);
 
             const atendimentoHasServicos: IAtendimentoHasServico[] = await new GetServicosFromAtendimento(new AtendimentoHasServicoRepository()).execute(atendimentoId);
+
+            if(!atendimentoHasServicos)
+            {
+                return response.status(404).json({mensagem: "Ainda não há serviços adicionados neste atendimento."});
+            }
+
+            return response.status(200).json(atendimentoHasServicos);
+        }
+        catch(error: any)
+        {
+            return response.status(500).json({mesagem: "Não foi possível consultar o atendimento.", erro: error.message});
+        }
+    }
+
+    async getMoreFrequentServices(request: Request, response: Response): Promise<Response>
+    {
+        try
+        {
+            const atendimentoHasServicos: IAtendimentoHasServico  = await new GetMoreFrequentServices(new AtendimentoHasServicoRepository()).execute();
 
             if(!atendimentoHasServicos)
             {

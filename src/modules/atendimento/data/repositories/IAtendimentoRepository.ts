@@ -10,4 +10,5 @@ export default interface IAtendimentoRepository
     delete(atendimentoId: number): Promise<void>;
     getUnique(atendimentoId: number): Promise<IAtendimento>;
     getAll(): Promise<IAtendimento[]>;
+    getMoreFrequentClients(): Promise<IAtendimento[]>;
 }

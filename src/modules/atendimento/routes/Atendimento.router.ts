@@ -11,6 +11,7 @@ router.patch("/atendimento/:atendimentoId", new AtendimentoController().update);
 router.delete("/atendimento/:atendimentoId", new AtendimentoController().delete);
 router.get("/atendimento/:atendimentoId", new AtendimentoController().getUnique);
 router.get("/atendimentos", new AtendimentoController().getAll);
+router.get("/getMoreFrequentClients/", new AtendimentoController().getMoreFrequentClients)
 
 //exporta o módulo de rota
 export default router;
