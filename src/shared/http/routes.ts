@@ -10,6 +10,7 @@ import loginRouter from "../../modules/login/routes/Login.router";
 import atendimentoHasServicoRouter from "../../modules/atendimentoHasServico/routes/AtendimentoHasServico.router";
 import filialRouter from "../../modules/filial/routes/Filial.routes";
 import enderecoRouter from "../../modules/endereco/routes/Endereco.routes";
+import funcionarioRouter from "../../modules/funcionario/plugin/router/FuncionarioRouterExpress";
 
 
 //instancia a rota
@@ -24,6 +25,7 @@ routes.use(loginRouter);
 routes.use(atendimentoHasServicoRouter);
 routes.use(filialRouter);
 routes.use(enderecoRouter);
+routes.use(funcionarioRouter);
 
 //exporta as rotas 
 export default routes;

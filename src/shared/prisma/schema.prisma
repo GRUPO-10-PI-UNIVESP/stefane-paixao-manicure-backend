@@ -59,6 +59,8 @@ model Endereco{
     cep String
 
     filial Filial[]
+
+    Funcionario Funcionario[]
 }
 
 model Atendimento{
@@ -87,3 +89,17 @@ model AtendimentoHasServico{
 
     @@id([atendimentoHasServicoId, atendimentoId, servicoId])
 }
+
+model Funcionario{
+    id Int @unique @default(autoincrement())
+    nome String
+    cpf String
+    admissao DateTime
+    desligamento DateTime?
+    cargo String
+    salario Int?
+    enderecoId Int
+
+    endereco Endereco @relation(fields: [enderecoId], references: [enderecoId])
+}
+
