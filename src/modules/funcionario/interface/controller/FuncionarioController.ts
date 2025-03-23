@@ -27,7 +27,7 @@ export default class FuncionarioController
         try
         {
             const funcionario = await service.execute(new FuncionarioFactory().getInstance(httpBody), param);
-           
+         
             return {code: 200, message: "Success", funcionario};
         }
         catch(error)

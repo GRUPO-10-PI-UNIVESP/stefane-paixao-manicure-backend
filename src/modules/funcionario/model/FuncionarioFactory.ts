@@ -7,7 +7,7 @@ export default class FuncionarioFactory
     {
         if(data)
         {
-            return new Funcionario(data.id, data.nome, data.cpf, data.admissao, data.desligamento, data.cargo, data.salario, data.endereco);
+            return new Funcionario(data.id, data.nome, data.cpf, data.admissao, data.desligamento, data.cargo, data.salario, data.endereco, data.filial);
         }
 
         throw new Error("Não foi possível criar o funcionário.");

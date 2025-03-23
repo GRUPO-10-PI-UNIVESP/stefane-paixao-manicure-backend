@@ -1,4 +1,5 @@
 import IEndereco from "../../endereco/data/entity/IEndereco";
+import IFilialEntity from "../../filial/data/model/IFilialEntity";
 
 export default interface IFuncionario
 {
@@ -10,4 +11,5 @@ export default interface IFuncionario
     cargo: string;
     salario: number;
     endereco: IEndereco;
+    filial: IFilialEntity;
 }

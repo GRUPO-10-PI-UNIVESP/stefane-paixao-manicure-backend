@@ -46,6 +46,7 @@ model Filial{
     endereco Endereco @relation(fields: [enderecoId], references: [enderecoId], onDelete: Cascade, onUpdate: Cascade) 
 
     atendimento Atendimento[]
+    funcionario Funcionario[]
 }
 
 model Endereco{
@@ -99,7 +100,9 @@ model Funcionario{
     cargo String
     salario Int?
     enderecoId Int
+    filialId Int?
 
     endereco Endereco @relation(fields: [enderecoId], references: [enderecoId])
+    filial Filial? @relation(fields: [filialId], references: [filialId])
 }
 

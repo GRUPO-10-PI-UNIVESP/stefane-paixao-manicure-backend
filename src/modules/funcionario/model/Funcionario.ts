@@ -1,5 +1,6 @@
 import IEndereco from "../../endereco/data/entity/IEndereco";
 import IFuncionario from "./IFuncionario";
+import IFilial from "../../filial/data/model/IFilialEntity";
 
 export default class Funcionario implements IFuncionario
 {
@@ -11,8 +12,10 @@ export default class Funcionario implements IFuncionario
     private _cargo: string;
     private _salario: number;
     private _endereco: IEndereco;
+    private _filial: IFilial;
 
-    constructor(id: number, nome: string, cpf: string, admissao: Date, desligamento: Date, cargo: string, salario: number, endereco: IEndereco)
+    constructor(id: number, nome: string, cpf: string, admissao: Date, desligamento: Date, 
+        cargo: string, salario: number, endereco: IEndereco, filial: IFilial)
     {
         this._id = id ?? 0;
         this._nome = nome;
@@ -22,7 +25,9 @@ export default class Funcionario implements IFuncionario
         this._cargo = cargo ?? undefined;
         this._salario = salario ?? undefined;
         this._endereco = endereco ?? undefined;
+        this._filial = filial ?? undefined;
     }
+
 
     public get id(): number 
     {
@@ -114,5 +119,14 @@ export default class Funcionario implements IFuncionario
         }
 
         return value;
+    }
+
+    public get filial(): IFilial 
+    {
+        return this._filial;
+    }
+    public set filial(value: IFilial) 
+    {
+        this._filial = value;
     }
 }

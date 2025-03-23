@@ -6,6 +6,7 @@ export default class FuncionarioRepositoryPrismaImpl implements IFuncionarioRepo
 {
     async create(funcionario: IFuncionario): Promise<void> 
     {
+        console.log(funcionario)
         await prisma.funcionario.create({data: {
             admissao: funcionario.admissao, 
             cargo: funcionario.cargo, 
@@ -25,11 +26,12 @@ export default class FuncionarioRepositoryPrismaImpl implements IFuncionarioRepo
                 logradouro: funcionario.endereco.logradouro,
                 numero: funcionario.endereco.numero,
             }
-        }}}});
+        }}, filial: {connect: {filialId: funcionario.filial.filialId}}}});
     }
 
     async update(funcionario: IFuncionario, id: number): Promise<void> 
     {
+        
         await prisma.funcionario.update({where: {id: id}, data: {
             admissao: funcionario.admissao,
             cargo: funcionario.cargo,
@@ -44,7 +46,7 @@ export default class FuncionarioRepositoryPrismaImpl implements IFuncionarioRepo
                 estado: funcionario.endereco.estado,
                 numero: funcionario.endereco.numero,
                 logradouro: funcionario.endereco.logradouro
-                }}}});
+                }}, filial: {update: {filialId: funcionario.filial.filialId}}}});
     }
 
     async delete(id: number): Promise<void> 
@@ -54,16 +56,16 @@ export default class FuncionarioRepositoryPrismaImpl implements IFuncionarioRepo
 
     async readUnique(id: number): Promise<IFuncionario> 
     {
-        return <IFuncionario> <unknown> await prisma.funcionario.findUnique({ where: { id: id }, include: {endereco: true} });
+        return <IFuncionario> <unknown> await prisma.funcionario.findUnique({ where: { id: id }, include: {endereco: true, filial: true} });
     }
 
     async readUniqueByName(nome: string): Promise<IFuncionario> 
     {
-        return <IFuncionario> <unknown> await prisma.funcionario.findFirst({where: {nome: nome}, include: {endereco: true}});
+        return <IFuncionario> <unknown> await prisma.funcionario.findFirst({where: {nome: nome}, include: {endereco: true, filial: true}});
     }
 
     async readAll(): Promise<IFuncionario> 
     {
-        return <IFuncionario> <unknown> await prisma.funcionario.findMany({include: {endereco: true}});
+        return <IFuncionario> <unknown> await prisma.funcionario.findMany({include: {endereco: true, filial: true}});
     }
 }
