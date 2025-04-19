@@ -27,6 +27,9 @@ import RemoveServiceFromAtendimento from "../../atendimentoHasServico/services/r
 import IServico from "../../servico/data/models/IServico";
 import GetServicosFromAtendimento from "../../atendimentoHasServico/services/get/GetServicosFromAtendimento";
 import GetMoreFrequentClients from "../services/read/GetMoreFrequentClients";
+import prisma from "../../../shared/prisma/prismaClient";
+import IAtendimentoHasServico from "../../atendimentoHasServico/data/models/IAtendimentoHasServico";
+import { Prisma } from "@prisma/client";
 
 //cria e exporta a classe controller de Atendimento
 export default class AtendimentoController
@@ -232,4 +235,492 @@ export default class AtendimentoController
             return response.status(500).json({mensagem: "Não foi possível consultar os atendimentos.", erro: error.message});
         }
     }
+
+    async getAtendimentosFromLastYear(request: Request, response: Response): Promise<Response>
+    {
+        try
+        {
+            const oneYear = new Date();
+            const atendimentos = await prisma.atendimentoHasServico.findMany({include: {servico: true, atendimento: {include: {agenda: true}}}, 
+            where: {atendimento: {agenda: {dataHoraFinal: {gt: oneYear}}}}, orderBy: {atendimento: {agenda: {dataHoraFinal: "desc"}}}});
+            return response.status(200).json({message: "", atendimentos});
+        }
+        catch(error)
+        {
+            console.error(error);
+            return response.status(500).json(error);
+        }
+    }
+
+    async getTotalMoney(request: Request, response: Response): Promise<Response>
+    {
+
+
+            try {
+                const atendimentosComTotal = await prisma.atendimento.findMany({
+                  select: {
+                    atendimentoHasServico: {
+                      select: {
+                        servico: {
+                          select: {
+                            valorServico: true,
+                          },
+                        },
+                      },
+                    },
+                  },
+                });
+          
+                const totalFaturamento = atendimentosComTotal.reduce((somaTotal, atendimento) => {
+                  const totalServicosAtendimento = atendimento.atendimentoHasServico.reduce(
+                    (somaAtendimento, item) => somaAtendimento + item.servico.valorServico.toNumber(),
+                    0
+                  );
+                  return somaTotal + totalServicosAtendimento;
+                }, 0);
+          
+                return response.status(200).json({ totalFaturamento });
+              } catch (error) {
+                console.error('Erro ao obter total de faturamento:', error);
+                return response.status(500).json(error);
+              }
+    
+        
+    }
+
+    async getTotalPorMes(request: Request, response: Response): Promise<Response>
+    {
+        try
+        {
+            const resultados = await prisma.$queryRaw<
+        Array<{ ano: number; mes: number; totalValor: Prisma.Decimal | null }>
+        >`
+        SELECT
+            YEAR(a.dataHoraInicial) AS ano,
+            MONTH(a.dataHoraInicial) AS mes,
+            SUM(at.valorTotal) AS totalValor
+        FROM Agenda a
+        JOIN Atendimento at ON a.agendaId = at.agendaId
+        GROUP BY YEAR(a.dataHoraInicial), MONTH(a.dataHoraInicial)
+        ORDER BY YEAR(a.dataHoraInicial) DESC, MONTH(a.dataHoraInicial) DESC;
+    `;
+
+    const resultadoFormatado = resultados.map(item => ({
+      ano: item.ano,
+      mes: item.mes,
+      totalValor: item.totalValor?.toNumber() || 0,
+    }));
+
+    return response.status(200).send(JSON.stringify(resultadoFormatado, (key, value) =>
+        typeof value === 'bigint' ? value.toString() : value
+      ));
+        } catch (error) {
+            console.error("Erro ao obter total de atendimentos por mês:", error);
+            return response.status(500).json({ error: "Erro interno do servidor" });
+        } finally {
+            await prisma.$disconnect();
+        }
+      
+    }
+
+    async getMoreFrequentServices(request: Request, response: Response): Promise<Response>
+    {
+        try {
+            const frequenciaServicos = await prisma.atendimentoHasServico.groupBy({
+                by: ['servicoId'],
+                _count: {
+                  servicoId: true,
+                },
+                orderBy: {
+                  _count: {
+                    servicoId: 'desc',
+                  },
+                },
+                take: 10, // Opcional: limite para os 10 serviços mais frequentes
+              });
+          
+              // Buscar os nomes dos serviços correspondentes aos IDs mais frequentes
+              const servicoIdsMaisFrequentes = frequenciaServicos.map(item => item.servicoId);
+          
+              const nomesServicos = await prisma.servico.findMany({
+                where: {
+                  servicoId: {
+                    in: servicoIdsMaisFrequentes,
+                  },
+                },
+                select: {
+                  servicoId: true,
+                  nomeServico: true,
+                },
+              });
+          
+              // Combinar a frequência com o nome do serviço
+              const resultado = frequenciaServicos.map(item => {
+                const nomeServico = nomesServicos.find(s => s.servicoId === item.servicoId)?.nomeServico || 'Nome não encontrado';
+                return {
+                  nomeServico: nomeServico,
+                  frequencia: item._count.servicoId,
+                };
+              });
+          
+              return response.status(200).json(resultado);
+            } catch (error) {
+              console.error("Erro ao obter serviços mais frequentes:", error);
+              return response.status(500).json({ error: "Erro interno do servidor" });
+            } finally {
+              await prisma.$disconnect();
+            }
+          };
+
+          async getMoreFrequentServicesByClients(request: Request, response: Response): Promise<Response>
+          {
+            try {
+                const frequenciaServicosPorCliente = await prisma.atendimento.findMany({
+                  select: {
+                    clienteId: true,
+                    cliente: {
+                      select: {
+                        nomeCliente: true,
+                      },
+                    },
+                    atendimentoHasServico: {
+                      select: {
+                        servicoId: true,
+                        servico: {
+                          select: {
+                            nomeServico: true,
+                          },
+                        },
+                      },
+                    },
+                  },
+                });
+            
+                const resultado = frequenciaServicosPorCliente.map(clienteAtendimentos => {
+                  const servicoFrequencia: { [nomeServico: string]: number } = {};
+            
+                  clienteAtendimentos.atendimentoHasServico.forEach(ahs => {
+                    const nomeServico = ahs.servico.nomeServico;
+                    servicoFrequencia[nomeServico] = (servicoFrequencia[nomeServico] || 0) + 1;
+                  });
+            
+                  const servicosOrdenados = Object.entries(servicoFrequencia)
+                    .sort(([, freqA], [, freqB]) => freqB - freqA)
+                    .map(([nomeServico, frequencia]) => ({ nomeServico, frequencia }));
+            
+                  return {
+                    clienteId: clienteAtendimentos.clienteId,
+                    nomeCliente: clienteAtendimentos.cliente.nomeCliente,
+                    servicosMaisFrequentes: servicosOrdenados,
+                  };
+                });
+            
+                return response.status(200).json(resultado);
+              } catch (error) {
+                console.error("Erro ao obter serviços mais frequentes por cliente:", error);
+                return response.status(500).json({ error: "Erro interno do servidor" });
+              } finally {
+                await prisma.$disconnect();
+              }
+          }
+
+          async getAtendimentosFromLastYearByFilial(request: Request, response: Response): Promise<Response> {
+            try {
+              const oneYearAgo = new Date();
+              oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+        
+              const atendimentosPorFilial = await prisma.filial.findMany({
+                select: {
+                  filialId: true,
+                  nome: true,
+                  atendimento: {
+                    where: {
+                      agenda: {
+                        dataHoraFinal: { gt: oneYearAgo },
+                      },
+                    },
+                    include: {
+                      agenda: true,
+                      atendimentoHasServico: {
+                        include: {
+                          servico: true,
+                        },
+                      },
+                    },
+                    orderBy: {
+                      agenda: {
+                        dataHoraFinal: 'desc',
+                      },
+                    },
+                  },
+                },
+              });
+        
+              const resultado = atendimentosPorFilial.map(filial => ({
+                filialId: filial.filialId,
+                nomeFilial: filial.nome,
+                atendimentos: filial.atendimento,
+              }));
+        
+              return response.status(200).json({ message: '', resultado });
+            } catch (error) {
+              console.error('Erro ao obter atendimentos do último ano por filial:', error);
+              return response.status(500).json(error);
+            }
+          }
+        
+          async getTotalMoneyByFilial(request: Request, response: Response): Promise<Response> {
+            try {
+              const totalPorFilial = await prisma.filial.findMany({
+                select: {
+                  filialId: true,
+                  nome: true,
+                  atendimento: {
+                    select: {
+                      atendimentoHasServico: {
+                        select: {
+                          servico: {
+                            select: {
+                              valorServico: true,
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              });
+        
+              const resultado = totalPorFilial.map(filial => {
+                let totalValorFilial = 0;
+                filial.atendimento.forEach(atendimento => {
+                  const totalServicosAtendimento = atendimento.atendimentoHasServico.reduce(
+                    (soma, item) => soma + item.servico.valorServico.toNumber(),
+                    0
+                  );
+                  totalValorFilial += totalServicosAtendimento;
+                });
+                return {
+                  filialId: filial.filialId,
+                  nomeFilial: filial.nome,
+                  totalValorServicos: totalValorFilial,
+                };
+              });
+        
+              console.log(resultado);
+              return response.status(200).json(resultado);
+            } catch (error) {
+              console.error('Erro ao obter total de dinheiro por filial:', error);
+              return response.status(500).json(error);
+            }
+          }
+        
+          async getTotalPorMesPorFilial(request: Request, response: Response): Promise<Response> {
+            try {
+              const resultados = await prisma.$queryRaw<
+                Array<{ filialId: number; nomeFilial: string; ano: number; mes: number; totalValor: Prisma.Decimal | null }>
+              >`
+                SELECT
+                  f.filialId,
+                  f.nome AS nomeFilial,
+                  YEAR(a.dataHoraInicial) AS ano,
+                  MONTH(a.dataHoraInicial) AS mes,
+                  SUM(at.valorTotal) AS totalValor
+                FROM Filial f
+                JOIN Atendimento at ON f.filialId = at.filialId
+                JOIN Agenda a ON at.agendaId = a.agendaId
+                GROUP BY f.filialId, YEAR(a.dataHoraInicial), MONTH(a.dataHoraInicial)
+                ORDER BY f.filialId, YEAR(a.dataHoraInicial) DESC, MONTH(a.dataHoraInicial) DESC;
+              `;
+        
+              const resultadoFormatado = resultados.map(item => ({
+                filialId: item.filialId,
+                nomeFilial: item.nomeFilial,
+                ano: item.ano,
+                mes: item.mes,
+                totalValor: item.totalValor?.toNumber() || 0,
+              }));
+        
+              return response.status(200).send(
+                JSON.stringify(resultadoFormatado, (key, value) =>
+                  typeof value === 'bigint' ? value.toString() : value
+                )
+              );
+            } catch (error) {
+              console.error('Erro ao obter total de atendimentos por mês por filial:', error);
+              return response.status(500).json({ error: 'Erro interno do servidor' });
+            } finally {
+              await prisma.$disconnect();
+            }
+          }
+        
+          async getMoreFrequentServicesByFilial(request: Request, response: Response): Promise<Response> {
+            try {
+              const frequenciaServicosPorFilial = await prisma.filial.findMany({
+                select: {
+                  filialId: true,
+                  nome: true,
+                  atendimento: {
+                    select: {
+                      atendimentoHasServico: {
+                        select: {
+                          servicoId: true,
+                          servico: {
+                            select: {
+                              nomeServico: true,
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              });
+        
+              const resultado = frequenciaServicosPorFilial.map(filial => {
+                const servicoFrequencia: { [nomeServico: string]: number } = {};
+                filial.atendimento.forEach(atendimento => {
+                  atendimento.atendimentoHasServico.forEach(ahs => {
+                    const nomeServico = ahs.servico.nomeServico;
+                    servicoFrequencia[nomeServico] = (servicoFrequencia[nomeServico] || 0) + 1;
+                  });
+                });
+        
+                const servicosOrdenados = Object.entries(servicoFrequencia)
+                  .sort(([, freqA], [, freqB]) => freqB - freqA)
+                  .map(([nomeServico, frequencia]) => ({ nomeServico, frequencia }));
+        
+                return {
+                  filialId: filial.filialId,
+                  nomeFilial: filial.nome,
+                  servicosMaisFrequentes: servicosOrdenados,
+                };
+              });
+        
+              return response.status(200).json(resultado);
+            } catch (error) {
+              console.error('Erro ao obter serviços mais frequentes por filial:', error);
+              return response.status(500).json({ error: 'Erro interno do servidor' });
+            } finally {
+              await prisma.$disconnect();
+            }
+          }
+        
+          async getMoreFrequentServicesByClientsByFilial(
+            request: Request,
+            response: Response
+          ): Promise<Response> {
+            try {
+              const filiaisComClientesEServicos = await prisma.filial.findMany({
+                select: {
+                  filialId: true,
+                  nome: true,
+                  atendimento: {
+                    select: {
+                      clienteId: true,
+                      cliente: {
+                        select: {
+                          nomeCliente: true,
+                        },
+                      },
+                      atendimentoHasServico: {
+                        select: {
+                          servicoId: true,
+                          servico: {
+                            select: {
+                              nomeServico: true,
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              });
+        
+              const resultado = filiaisComClientesEServicos.map(filial => {
+                const clientesComServicosFrequentes: {
+                  [clienteId: number]: { nomeCliente: string; servicosMaisFrequentes: { nomeServico: string; frequencia: number }[] };
+                } = {};
+        
+                filial.atendimento.forEach(atendimento => {
+                  const clienteId = atendimento.clienteId;
+                  const nomeCliente = atendimento.cliente.nomeCliente;
+                  const servicoFrequencia: { [nomeServico: string]: number } = {};
+        
+                  atendimento.atendimentoHasServico.forEach(ahs => {
+                    const nomeServico = ahs.servico.nomeServico;
+                    servicoFrequencia[nomeServico] = (servicoFrequencia[nomeServico] || 0) + 1;
+                  });
+        
+                  const servicosOrdenados = Object.entries(servicoFrequencia)
+                    .sort(([, freqA], [, freqB]) => freqB - freqA)
+                    .map(([nomeServico, frequencia]) => ({ nomeServico, frequencia }));
+        
+                  clientesComServicosFrequentes[clienteId] = { nomeCliente, servicosMaisFrequentes: servicosOrdenados };
+                });
+        
+                return {
+                  filialId: filial.filialId,
+                  nomeFilial: filial.nome,
+                  clientesComServicosFrequentes,
+                };
+              });
+        
+              return response.status(200).json(resultado);
+            } catch (error) {
+              console.error('Erro ao obter serviços mais frequentes por cliente por filial:', error);
+              return response.status(500).json({ error: 'Erro interno do servidor' });
+            } finally {
+              await prisma.$disconnect();
+            }
+          }
+
+          async getTotalSpentByClient(request: Request, response: Response): Promise<Response> {
+            try {
+              const clientesComTotalGasto = await prisma.cliente.findMany({
+                select: {
+                  clienteId: true,
+                  nomeCliente: true,
+                  atendimento: {
+                    select: {
+                      atendimentoHasServico: {
+                        select: {
+                          servico: {
+                            select: {
+                              valorServico: true,
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              });
+        
+              const resultado = clientesComTotalGasto.map(cliente => {
+                let totalGastoCliente = 0;
+                cliente.atendimento.forEach(atendimento => {
+                  const totalServicosAtendimento = atendimento.atendimentoHasServico.reduce(
+                    (soma, item) => soma + item.servico.valorServico.toNumber(),
+                    0
+                  );
+                  totalGastoCliente += totalServicosAtendimento;
+                });
+                return {
+                  clienteId: cliente.clienteId,
+                  nomeCliente: cliente.nomeCliente,
+                  totalGasto: totalGastoCliente,
+                };
+              });
+        
+              return response.status(200).json(resultado);
+            } catch (error) {
+              console.error('Erro ao obter total gasto por cliente:', error);
+              return response.status(500).json(error);
+            }
+          }
+        
+          
+    
 }
